@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>我的工具库 - 高精度计算器（全检修复版）</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+body{
+  background:linear-gradient(135deg,#e8f4ff 0%,#dde3ff 100%);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px 16px;
+}
+h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
+.page{display:none;width:100%;max-width:420px;}
+.page.active{display:block;}
+
+/* 首页 */
+.home-buttons{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;}
+.home-btn{
+  width:170px;height:170px;border:none;border-radius:20px;
+  font-size:22px;color:#fff;cursor:pointer;user-select:none;
+  background:linear-gradient(135deg,#48bb78,#38a169);
+  box-shadow:0 6px 16px rgba(0,0,0,.14);
+  transition:transform .2s,box-shadow .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.home-btn:active{transform:scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.12);}
+
+.back-btn{
+  margin-top:24px;width:100%;padding:12px;border:none;border-radius:10px;
+  background:#718096;color:#fff;font-size:17px;cursor:pointer;user-select:none;
+  transition:background .2s;-webkit-tap-highlight-color:transparent;
+}
+.back-btn:active{background:#4a5568;}
+
+/* 计算器 */
+.calc-container{max-width:360px;margin:0 auto;position:relative;}
+.calc-title{text-align:center;margin-bottom:16px;color:#2d3748;font-size:22px;}
+
+/* 历史抽屉 */
+.history-toggle{
+  position:absolute;top:0;right:0;padding:4px 8px;font-size:14px;
+  color:#3182ce;background:rgba(255,255,255,.7);border:none;border-radius:6px;cursor:pointer;
+}
+.history-panel{
+  display:none;position:absolute;top:30px;right:0;left:0;
+  background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.15);
+  max-height:220px;overflow-y:auto;padding:10px;z-index:10;
+}
+.history-panel.show{display:block;}
+.history-item{
+  padding:8px;border-bottom:1px solid #eee;cursor:pointer;font-size:14px;
+  color:#2d3748;
+}
+.history-item:active{background:#edf2f7;}
+.history-clear{margin-top:8px;padding:6px;width:100%;border:none;color:#e53e3e;background:#fef2f2;border-radius:6px;cursor:pointer;}
+
+.calc-screen-wrap{
+  background:#1a202c;border-radius:16px;padding:20px;margin:40px 0 16px;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.3);
+}
+.calc-pre{
+  color:#a0aec0;font-size:16px;min-height:24px;text-align:right;
+  word-break:break-all;
+}
+.calc-screen{
+  color:#fff;text-align:right;min-height:64px;
+  overflow-x:auto;white-space:nowrap;margin-top:8px;
+  font-variant-numeric:tabular-nums;
+}
+.shake{animation:shake .4s ease;}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%,60%{transform:translateX(-6px);}
+  40%,80%{transform:translateX(6px);}
+}
+
+.calc-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.calc-btn{
+  padding:18px 0;font-size:20px;border:none;border-radius:12px;
+  cursor:pointer;background:#edf2f7;user-select:none;
+  transition:all .12s ease;-webkit-tap-highlight-color:transparent;
+}
+.calc-btn:active{filter:brightness(.82);transform:scale(.96);}
+.calc-btn.op{background:#ed8936;color:#fff;}
+.calc-btn.func{background:#805ad5;color:#fff;}
+.calc-btn.eq{background:#3182ce;color:#fff;}
+.calc-btn.ac{background:#e53e3e;color:#fff;}
+</style>
+</head>
+<body>
+
+<div id="page-home" class="page active">
+  <h1>我的工具库</h1>
+  <div class="home-buttons">
+    <button class="home-btn" onclick="safeWrap(showPage,'page-calc')">🧮 高精度计算器</button>
+  </div>
+</div>
+
+<div id="page-calc" class="page">
+  <div class="calc-container">
+    <h2 class="calc-title">高精度计算器</h2>
+    <button class="history-toggle" onclick="safeWrap(toggleHistory)">📜 历史</button>
+    <div class="history-panel" id="historyPanel">
+      <div id="historyList"></div>
+      <button class="history-clear" onclick="safeWrap(clearHistory)">清空历史</button>
+    </div>
+
+    <div class="calc-screen-wrap">
+      <div class="calc-pre" id="calc-pre"></div>
+      <div class="calc-screen" id="calc-screen">0</div>
+    </div>
+
+    <div class="calc-buttons">
+      <button class="calc-btn ac" onclick="safeWrap(calcClear)">AC</button>
+      <button class="calc-btn func" onclick="safeWrap(calcInput,'(')">(</button>
+      <button class="calc-btn func" onclick="safeWrap(calcInput,')')">)</button>
+      <button class="calc-btn func" onclick="safeWrap(calcPercent)">%</button>
+
+      <button class="calc-btn" onclick="safeWrap(calcInput,'7')">7</button>
+      <button class="calc-btn" onclick="safeWrap(calcInput,'8')">8</button>
+      <button class="calc-btn" onclick="safeWrap(calcInput,'9')">9</button>
+      <button class="calc-btn op" onclick="safeWrap(calcInput,'/')">÷</button>
+
+      <button class="calc-btn" onclick="safeWrap(calcInput,'4')">4</button>
+      <button class="calc-btn" onclick="safeWrap(calcInput,'5')">5</button>
+      <button class="calc-btn" onclick="safeWrap(calcInput,'6')">6</button>
+      <button class="calc-btn op" onclick="safeWrap(calcInput,'*')">×</button>
+
+      <button class="calc-btn" onclick="safeWrap(calcInput,'1')">1</button>
+      <button class="calc-btn" onclick="safeWrap(calcInput,'2')">2</button>
+      <button class="calc-btn" onclick="safeWrap(calcInput,'3')">3</button>
+      <button class="calc-btn op" onclick="safeWrap(calcInput,'-')">−</button>
+
+      <button class="calc-btn" onclick="safeWrap(calcInput,'0')">0</button>
+      <button class="calc-btn" onclick="safeWrap(calcDot)">.</button>
+      <button class="calc-btn func" onclick="safeWrap(calcMinus)">±</button>
+      <button class="calc-btn op" onclick="safeWrap(calcInput,'+')">+</button>
+
+      <button class="calc-btn func" onclick="safeWrap(calcSquare)">x²</button>
+      <button class="calc-btn func" onclick="safeWrap(calcDel)">⌫</button>
+      <button class="calc-btn eq" style="grid-column:span 2;" onclick="safeWrap(calcEqual)">＝</button>
+    </div>
+
+    <button class="back-btn" onclick="safeWrap(showPage,'page-home')">返回首页</button>
+  </div>
+</div>
+
+<script>
+// 全局安全包裹：防止单个异常导致整个计算器卡死
+function safeWrap(fn, ...args){
+  try{
+    fn.apply(null, args);
+  }catch(e){
+    console.error(e);
+    shakeScreen();
+  }
+}
+
+// 页面切换
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// 配置
+const MAX_EXPR_LEN = 180;
+const MAX_DECIMAL = 16;
+const MAX_HISTORY = 30;
+
+let expr = '';         // 真正用来运算的表达式（纯英文符号）
+let justCalculated = false;
+let history = [];
+
+const screenEl = document.getElementById('calc-screen');
+const preEl = document.getElementById('calc-pre');
+const historyPanel = document.getElementById('historyPanel');
+const historyList = document.getElementById('historyList');
+
+// 仅显示用：加千分位
+function formatNumWithComma(str){
+  if(str === '错误') return str;
+  const parts = str.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+}
+
+// 动态字号
+function setFontSize(){
+  const len = (expr||'0').length;
+  let fs = 42;
+  if(len>12) fs=34;
+  if(len>22) fs=28;
+  if(len>35) fs=22;
+  screenEl.style.fontSize = fs+'px';
+}
+
+function updateUI(){
+  const raw = expr || '0';
+  screenEl.textContent = formatNumWithComma(raw);
+  setFontSize();
+}
+
+function shakeScreen(){
+  screenEl.classList.add('shake');
+  setTimeout(()=>screenEl.classList.remove('shake'),400);
+}
+
+function isOp(c){ return ['+','-','*','/'].includes(c); }
+function lastIsNumOrBracket(){ if(!expr) return false; return /[0-9\)]/.test(expr.slice(-1)); }
+
+// 去掉科学计数、末尾多余0
+function toPlainString(n){
+  if(!isFinite(n)) return '错误';
+  let s = String(n);
+  // 处理科学计数
+  if(/e/i.test(s)){
+    s = Number(n).toPrecision(MAX_DECIMAL);
+  }
+  s = parseFloat(s).toFixed(MAX_DECIMAL);
+  s = s.replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.0+$/, '');
+  return s === '' ? '0' : s;
+}
+
+// 安全求值（⚠️ 这里彻底移除整条表达式 BigInt；以后需要再单独做大数库）
+function safeEval(str){
+  try{
+    let s = str.replace(/\s/g,'');
+    // 白名单校验
+    if(!/^[\d\.\+\-\*\/\(\)]*$/.test(s)) return null;
+    // 括号配对
+    const left = (s.match(/\(/g)||[]).length;
+    const right = (s.match(/\)/g)||[]).length;
+    if(left !== right) return null;
+
+    const fn = new Function('"use strict";return (' + s + ')');
+    const r = fn();
+    if(!isFinite(r)) return null;
+    return Number(r.toFixed(MAX_DECIMAL));
+  }catch(e){
+    console.error('safeEval err:',e);
+    return null;
+  }
+}
+
+function calcInput(ch){
+  if(expr === '错误'){ expr=''; justCalculated=false; }
+  if(expr.length >= MAX_EXPR_LEN) return;
+
+  if(justCalculated){
+    if(/[0-9\(]/.test(ch)) expr='';
+    justCalculated = false;
+  }
+
+  // 显示符号转运算符号
+  if(ch === '÷') ch='/';
+  if(ch === '×') ch='*';
+  if(ch === '−') ch='-';
+
+  if(isOp(ch)){
+    if(!expr){
+      if(ch==='-') expr += ch;
+      updateUI(); return;
+    }
+    const last = expr.slice(-1);
+    if(isOp(last)) expr = expr.slice(0,-1)+ch;
+    else if(last==='('){ if(ch==='-') expr+=ch; }
+    else expr+=ch;
+  }else if(ch === '('){
+    if(expr && lastIsNumOrBracket()) expr += '*';
+    expr += '(';
+  }else if(ch === ')'){
+    const lc=(expr.match(/\(/g)||[]).length;
+    const rc=(expr.match(/\)/g)||[]).length;
+    if(lc>rc && lastIsNumOrBracket()) expr += ')';
+  }else{
+    if(expr==='0' && /[0-9]/.test(ch)) expr=ch;
+    else expr+=ch;
+  }
+  updateUI();
+}
+
+function calcDot(){
+  if(expr==='错误'){ expr=''; justCalculated=false; }
+  if(justCalculated){ expr=''; justCalculated=false; }
+  if(expr.length>=MAX_EXPR_LEN) return;
+
+  const parts = expr.split(/[\+\-\*\/\(\)]/);
+  const lastPart = parts[parts.length-1];
+  if(!lastPart.includes('.')){
+    if(lastPart===''||lastPart==='-') expr+='0.';
+    else expr+='.';
+  }
+  updateUI();
+}
+
+// 取末尾数字（带校验）
+function _getLastNumberInfo(){
+  if(!expr) return null;
+  const m = expr.match(/(-?[\d.]+)$/);
+  if(!m) return null;
+  const num = parseFloat(m[1]);
+  if(isNaN(num)) return null;
+  return { before:expr.slice(0,expr.length-m[1].length), num:num };
+}
+
+function calcMinus(){
+  const info = _getLastNumberInfo();
+  if(!info) return;
+  expr = info.before + (-info.num);
+  justCalculated = false;
+  updateUI();
+}
+
+function calcPercent(){
+  const info = _getLastNumberInfo();
+  if(!info) return;
+  expr = info.before + (info.num / 100);
+  justCalculated = false;
+  updateUI();
+}
+
+function calcSquare(){
+  const info = _getLastNumberInfo();
+  if(!info) return;
+  expr = info.before + (info.num * info.num);
+  justCalculated = false;
+  updateUI();
+}
+
+function calcClear(){
+  expr=''; justCalculated=false;
+  preEl.textContent='';
+  updateUI();
+}
+
+function calcDel(){
+  if(expr==='错误') expr='';
+  else expr = expr.slice(0,-1);
+  justCalculated = false;
+  preEl.textContent='';
+  updateUI();
+}
+
+function pushHistory(formula, resStr){
+  history.unshift({ f:formula, r:resStr });
+  if(history.length>MAX_HISTORY) history.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  historyList.innerHTML = '';
+  history.forEach(h=>{
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.textContent = `${h.f} = ${h.r}`;
+    div.onclick = ()=>{
+      expr = h.r;
+      justCalculated = false;
+      preEl.textContent = '';
+      updateUI();
+      historyPanel.classList.remove('show');
+    };
+    historyList.appendChild(div);
+  });
+}
+
+function toggleHistory(){ historyPanel.classList.toggle('show'); }
+function clearHistory(){ history=[]; renderHistory(); }
+
+function calcEqual(){
+  if(!expr) return;
+  const src = expr;
+  const res = safeEval(expr);
+  if(res===null){
+    expr='错误'; shakeScreen(); justCalculated=false;
+  }else{
+    const s = toPlainString(res);
+    preEl.textContent = src + ' =';
+    pushHistory(src,s);
+    expr = s;
+    justCalculated = true;
+  }
+  updateUI();
+}
+
+// 键盘监听（也加上安全兜底）
+document.addEventListener('keydown',e=>safeWrap(()=>{
+  const k = e.key;
+  if(expr.length>=MAX_EXPR_LEN && /[\d\.\+\-\*\/\(\)]/.test(k)) return;
+  if(/[\d\+\-\*\/\(\)\.]/.test(k)) calcInput(k);
+  else if(k==='Enter'||k==='=') calcEqual();
+  else if(k==='Escape') calcClear();
+  else if(k==='Backspace') calcDel();
+}));
+
+updateUI();
+renderHistory();
+</script>
+</body>
+</html>
