@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>我的工具库 - 高精度计算器（全检修复版）</title>
+<title>我的工具库</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M16 7l2.2 4.6 5 .7-3.6 3.5.9 5L16 18.2l-4.5 2.6.9-5-3.6-3.5 5-.7z' fill='%23fff'/%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
 body{
@@ -26,6 +29,12 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
   transition:transform .2s,box-shadow .2s;
   -webkit-tap-highlight-color:transparent;
 }
+.home-btn:nth-child(2){
+  background:linear-gradient(135deg,#3182ce,#2b6cb0);
+}
+.home-btn:nth-child(3){
+  background:linear-gradient(135deg,#d69e2e,#b7791f);
+}
 .home-btn:active{transform:scale(.96);box-shadow:0 3px 8px rgba(0,0,0,.12);}
 
 .back-btn{
@@ -35,11 +44,10 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
 }
 .back-btn:active{background:#4a5568;}
 
-/* 计算器 */
+/* === 计算器样式 === */
 .calc-container{max-width:360px;margin:0 auto;position:relative;}
 .calc-title{text-align:center;margin-bottom:16px;color:#2d3748;font-size:22px;}
 
-/* 历史抽屉 */
 .history-toggle{
   position:absolute;top:0;right:0;padding:4px 8px;font-size:14px;
   color:#3182ce;background:rgba(255,255,255,.7);border:none;border-radius:6px;cursor:pointer;
@@ -88,17 +96,129 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
 .calc-btn.func{background:#805ad5;color:#fff;}
 .calc-btn.eq{background:#3182ce;color:#fff;}
 .calc-btn.ac{background:#e53e3e;color:#fff;}
+
+/* === 地图查看器页面样式 === */
+.map-page .tip{
+  font-size:13px;color:#718096;text-align:center;margin-bottom:12px;line-height:1.5;
+}
+.map-select{
+  width:100%;padding:10px;border-radius:10px;border:1px solid #cbd5e0;font-size:16px;margin-bottom:12px;
+}
+.map-actions{
+  display:flex;gap:10px;margin-bottom:12px;
+}
+.map-actions button{
+  flex:1;padding:10px;border:none;border-radius:10px;font-size:15px;cursor:pointer;color:#fff;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-goto-official{background:#2f855a;}
+.btn-reset-view{background:#2b6cb0;}
+
+.viewport-wrap{
+  width:100%;height:60vh;
+  background:#111;border-radius:12px;overflow:hidden;position:relative;
+  touch-action:none;color:#aaa;
+  display:flex;align-items:center;justify-content:center;
+}
+.load-hint{
+  position:absolute;z-index:2;font-size:15px;text-align:center;padding:10px;
+}
+.viewport-img{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background-size:contain;background-repeat:no-repeat;background-position:center;
+  transform-origin:center center;
+  cursor:grab;
+}
+.viewport-img:active{cursor:grabbing;}
+
+.map-disclaimer{
+  margin-top:12px;font-size:12px;color:#a0aec0;text-align:center;padding:0 8px;
+}
+#page-map .back-btn{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:16px;width:min(420px,calc(100% - 32px));
+  z-index:60;background:#2b6cb0;font-weight:600;font-size:17px;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
+}
+
+/* === 证书奖状生成器样式（#page-cert 作用域隔离） === */
+#page-cert{max-width:1200px;}
+#page-cert .form-card,
+#page-cert .preview-card {
+  background:#ffffff;border-radius:18px;box-shadow:0 10px 30px rgba(15,23,42,.08);
+}
+#page-cert .template-card{border:2px solid #e5e7eb;border-radius:14px;padding:10px;cursor:pointer;transition:all .2s ease;background:#fff;}
+#page-cert .template-card.active{border-color:#4f46e5;box-shadow:0 8px 20px rgba(79,70,229,.18);}
+#page-cert .template-card:hover{transform:translateY(-1px);}
+#page-cert .template-preview{height:56px;border-radius:10px;margin-bottom:8px;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.06);}
+
+#page-cert .cert-paper{width:820px;height:560px;padding:40px;position:relative;text-align:center;overflow:hidden;flex-shrink:0;background-color:#fbfbf6;}
+#page-cert .cert-paper::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(0,0,0,.012) 1px,transparent 1px),radial-gradient(rgba(0,0,0,.008) 1px,transparent 1px);background-size:3px 3px,7px 7px;background-position:0 0,1px 2px;opacity:.35;}
+
+#page-cert .template1.cert-paper{background-color:#fdfaf1;border:22px solid #8a1a1a;box-shadow:inset 0 0 0 7px #fdfaf1,inset 0 0 0 13px #c9a24a,inset 0 0 0 18px #8a1a1a,0 10px 30px rgba(0,0,0,.12);}
+#page-cert .template1 .title{font-family:"STKaiti","KaiTi","楷体","Noto Serif SC",serif;font-size:54px;font-weight:900;letter-spacing:18px;color:#8a1a1a;margin-bottom:14px;}
+#page-cert .template1 .subtitle{font-size:16px;letter-spacing:8px;color:#8a1a1a;margin-bottom:24px;}
+#page-cert .template1 .name{font-family:"STKaiti","KaiTi","楷体",serif;font-size:32px;font-weight:bold;color:#111827;margin:16px 0;}
+#page-cert .template1 .content{font-size:21px;line-height:2;color:#374151;padding:0 50px;margin:22px 0;}
+#page-cert .template1 .footer{font-size:19px;color:#4b5563;text-align:right;padding-right:40px;margin-top:30px;}
+
+#page-cert .template2.cert-paper{background-color:#f5f8fd;border:20px solid #1e3a8a;box-shadow:inset 0 0 0 7px #f5f8fd,inset 0 0 0 13px #94b8e0,inset 0 0 0 18px #1e3a8a,0 10px 30px rgba(0,0,0,.12);}
+#page-cert .template2 .title{font-family:"STKaiti","KaiTi","楷体","Noto Serif SC",serif;font-size:50px;font-weight:900;letter-spacing:14px;color:#1e3a8a;margin-bottom:14px;}
+#page-cert .template2 .subtitle{font-size:15px;letter-spacing:8px;color:#1e3a8a;margin-bottom:24px;}
+#page-cert .template2 .name{font-size:31px;font-weight:bold;color:#0f172a;margin:16px 0;}
+#page-cert .template2 .content{font-size:21px;line-height:2;color:#334155;padding:0 50px;margin:22px 0;}
+#page-cert .template2 .footer{font-size:19px;color:#475569;text-align:right;padding-right:40px;margin-top:30px;}
+
+#page-cert .template3.cert-paper{background-color:#f4e7c5;border:18px solid #6b4423;box-shadow:inset 0 0 0 7px #f4e7c5,inset 0 0 0 13px #b58444,inset 0 0 0 18px #6b4423,0 10px 30px rgba(0,0,0,.12);}
+#page-cert .template3 .title{font-family:"STKaiti","KaiTi","楷体","Noto Serif SC",serif;font-size:52px;font-weight:900;letter-spacing:16px;color:#5b2c0f;margin-bottom:14px;}
+#page-cert .template3 .subtitle{font-size:16px;letter-spacing:8px;color:#5b2c0f;margin-bottom:24px;}
+#page-cert .template3 .name{font-family:"STKaiti","KaiTi","楷体",serif;font-size:32px;font-weight:bold;color:#2b1608;margin:16px 0;}
+#page-cert .template3 .content{font-size:21px;line-height:2;color:#3b2410;padding:0 50px;margin:22px 0;}
+#page-cert .template3 .footer{font-size:19px;color:#3b2410;text-align:right;padding-right:40px;margin-top:30px;}
+
+#page-cert .stamp{position:absolute;bottom:40px;right:40px;width:146px;height:146px;border-radius:50%;border:4px solid #b91c1c;background:transparent;background-image:radial-gradient(circle,rgba(185,28,28,.08) 0%,transparent 70%);box-shadow:inset 0 0 0 5px #b91c1c;transform:rotate(-5deg);display:flex;align-items:center;justify-content:center;overflow:hidden;filter:url(#stampNoise);}
+#page-cert .stamp-ring-text{position:absolute;top:12px;left:0;right:0;height:68px;color:#b91c1c;font-weight:900;font-size:14px;letter-spacing:1px;}
+#page-cert .stamp-star{position:absolute;top:56px;left:50%;transform:translateX(-50%);color:#b91c1c;font-size:18px;}
+#page-cert .stamp-center{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:14px;font-weight:900;color:#b91c1c;letter-spacing:2px;}
+
+#page-cert .preview-outer{width:100%;overflow:auto;background:#e5e7eb;border-radius:16px;padding:18px;}
+#page-cert .preview-inner{display:flex;justify-content:center;align-items:flex-start;min-width:100%;}
+#page-cert #previewBox{transform-origin:top center;transition:transform .2s ease;}
+@media (max-width:900px){#page-cert #previewBox{transform:scale(.55);}}
+@media (max-width:640px){#page-cert #previewBox{transform:scale(.42);}}
+
+.loading-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:999;}
+.loading-mask.show{display:flex;}
+.loading-box{background:#fff;padding:20px 28px;border-radius:14px;font-weight:bold;color:#1f2937;}
+#page-cert input,#page-cert textarea{transition:all .2s ease;}
+#page-cert input:focus,#page-cert textarea:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.14);}
 </style>
 </head>
 <body>
 
+<!-- svg滤镜，印章噪点斑驳效果 -->
+<svg style="position:absolute;width:0;height:0;">
+  <filter id="stampNoise">
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+  </filter>
+</svg>
+
+<div class="loading-mask" id="loadingMask">
+  <div class="loading-box">正在生成高清图片，请稍候...</div>
+</div>
+
+<!-- 首页 -->
 <div id="page-home" class="page active">
   <h1>我的工具库</h1>
   <div class="home-buttons">
-    <button class="home-btn" onclick="safeWrap(showPage,'page-calc')">🧮 高精度计算器</button>
+    <button class="home-btn" onclick="safeWrap(showPage,'page-calc')">🧮 计算器</button>
+    <button class="home-btn" onclick="safeWrap(showPage,'page-map')">🗺️ 地图查看</button>
+    <button class="home-btn" onclick="safeWrap(showPage,'page-cert')">🏆 证书奖状</button>
   </div>
 </div>
 
+<!-- 计算器页 -->
 <div id="page-calc" class="page">
   <div class="calc-container">
     <h2 class="calc-title">高精度计算器</h2>
@@ -148,29 +268,165 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
   </div>
 </div>
 
+<!-- 地图查看页 -->
+<div id="page-map" class="page map-page">
+  <h2 style="text-align:center;margin-bottom:12px;color:#2d3748;">地图查看器</h2>
+  <div class="tip">提示：双指/滚轮放大缩小、按住拖动平移；「获取标准地图」打开自然资源部官网</div>
+
+  <select id="mapSelect" class="map-select">
+    <option value="world">世界政区图</option>
+    <option value="china-admin">中国政区图</option>
+    <option value="china-terrain">中国地势图</option>
+    <option value="gd">广东省地图</option>
+  </select>
+
+  <div class="map-actions">
+    <button class="btn-goto-official" onclick="window.open('http://bzdt.ch.mnr.gov.cn/','_blank')">获取标准地图</button>
+    <button class="btn-reset-view" onclick="resetMapView()">重置视图</button>
+  </div>
+
+  <div class="viewport-wrap" id="viewWrap">
+    <div class="load-hint" id="loadHint">地图加载中…</div>
+    <div class="viewport-img" id="viewImg"></div>
+  </div>
+
+  <div class="map-disclaimer">
+    ⚠️ 本页所有地图均为自然资源部标准地图，仅用于学习演示。
+  </div>
+
+  <button class="back-btn" onclick="showPage('page-home')">返回首页</button>
+</div>
+
+<!-- 证书奖状生成器页 -->
+<div id="page-cert" class="page">
+  <div class="max-w-7xl mx-auto p-4 lg:p-8">
+    <header class="text-center mb-6">
+      <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-800" style="color:#2d3748;">🏆 证书奖状生成器</h2>
+      <p class="text-slate-500 mt-1 text-sm">图形化模板选择 · 实时预览 · 一键导出高清图片</p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- 左侧：表单 -->
+      <div class="lg:col-span-4 form-card p-6 lg:p-7">
+        <h3 class="text-lg font-bold text-slate-700 mb-4" style="color:#2d3748;">📝 内容设置</h3>
+
+        <!-- 类型 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-slate-600 mb-2">文档类型</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="template-card text-center py-3 active" id="typeCertCard">
+              <input type="radio" name="docType" value="cert" checked class="hidden" onchange="renderPreview()">
+              <span class="font-semibold text-slate-700">📜 证书</span>
+            </label>
+            <label class="template-card text-center py-3" id="typeAwardCard">
+              <input type="radio" name="docType" value="award" class="hidden" onchange="renderPreview()">
+              <span class="font-semibold text-slate-700">🏅 奖状</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 模板 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-slate-600 mb-2">选择模板</label>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="template-card active text-center" data-tpl="1" onclick="selectTemplate(1)">
+              <div class="template-preview" style="background:#fdfaf1;border:2px solid #8a1a1a;">
+                <div style="position:absolute;top:10px;left:10px;right:10px;height:4px;background:#c9a24a;border-radius:2px;"></div>
+                <div style="position:absolute;bottom:10px;left:20px;right:20px;height:3px;background:#c9a24a;border-radius:2px;"></div>
+              </div>
+              <div class="text-sm font-semibold text-slate-700">红金印刷</div>
+            </div>
+            <div class="template-card text-center" data-tpl="2" onclick="selectTemplate(2)">
+              <div class="template-preview" style="background:#f5f8fd;border:2px solid #1e3a8a;">
+                <div style="position:absolute;top:12px;left:12px;right:12px;height:4px;background:#94b8e0;border-radius:2px;"></div>
+                <div style="position:absolute;bottom:12px;left:22px;right:22px;height:3px;background:#94b8e0;border-radius:2px;"></div>
+              </div>
+              <div class="text-sm font-semibold text-slate-700">蓝白商务</div>
+            </div>
+            <div class="template-card text-center" data-tpl="3" onclick="selectTemplate(3)">
+              <div class="template-preview" style="background:#f4e7c5;border:2px solid #6b4423;">
+                <div style="position:absolute;top:12px;left:12px;right:12px;height:4px;background:#b58444;border-radius:2px;"></div>
+                <div style="position:absolute;bottom:12px;left:22px;right:22px;height:3px;background:#b58444;border-radius:2px;"></div>
+              </div>
+              <div class="text-sm font-semibold text-slate-700">复古米黄</div>
+            </div>
+          </div>
+          <input type="hidden" id="templateSel" value="1">
+        </div>
+
+        <!-- 文字输入 -->
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">标题</label>
+            <input type="text" id="title" class="w-full border border-slate-300 rounded-lg px-3 py-2" value="荣誉证书" oninput="renderPreview()">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">获奖人姓名</label>
+            <input type="text" id="name" class="w-full border border-slate-300 rounded-lg px-3 py-2" value="张三" oninput="renderPreview()">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">正文内容</label>
+            <textarea id="content" rows="3" class="w-full border border-slate-300 rounded-lg px-3 py-2" oninput="renderPreview()">在本次活动中表现优异，成绩突出，特颁发此证书，以资鼓励。</textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">发奖人 / 签发人</label>
+            <input type="text" id="issuer" class="w-full border border-slate-300 rounded-lg px-3 py-2" value="主任：李华" oninput="renderPreview()">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">公章文字（环形文字）</label>
+            <input type="text" id="stampText" class="w-full border border-slate-300 rounded-lg px-3 py-2" value="XX有限公司" oninput="renderPreview()">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-600 mb-1">日期</label>
+            <input type="date" id="dateInput" class="w-full border border-slate-300 rounded-lg px-3 py-2" oninput="renderPreview()">
+          </div>
+        </div>
+
+        <button id="downloadBtn" onclick="downloadImage()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-lg font-bold shadow hover:bg-indigo-700 transition-all">
+          💾 导出高清证书图片
+        </button>
+      </div>
+
+      <!-- 右侧：预览 -->
+      <div class="lg:col-span-8 preview-card p-6 lg:p-7">
+        <h3 class="text-lg font-bold text-slate-700 mb-4" style="color:#2d3748;">🖼️ 实时预览</h3>
+        <div class="preview-outer">
+          <div class="preview-inner">
+            <div id="previewBox"></div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-3 text-center">提示：手机端可横向滑动查看完整证书，导出图片为原始高清比例。</p>
+      </div>
+
+    </div>
+  </div>
+  <button class="back-btn" onclick="safeWrap(showPage,'page-home')">返回首页</button>
+</div>
+
 <script>
-// 全局安全包裹：防止单个异常导致整个计算器卡死
+// ---------- 全局安全包装 ----------
 function safeWrap(fn, ...args){
-  try{
-    fn.apply(null, args);
-  }catch(e){
-    console.error(e);
-    shakeScreen();
-  }
+  try{ fn.apply(null, args); }catch(e){ console.error(e); shakeScreen?.(); }
 }
 
-// 页面切换
+// ---------- 页面切换 ----------
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// 配置
+// ---------- 计算器逻辑 ----------
 const MAX_EXPR_LEN = 180;
 const MAX_DECIMAL = 16;
 const MAX_HISTORY = 30;
 
-let expr = '';         // 真正用来运算的表达式（纯英文符号）
+let expr = '';
 let justCalculated = false;
 let history = [];
 
@@ -179,105 +435,73 @@ const preEl = document.getElementById('calc-pre');
 const historyPanel = document.getElementById('historyPanel');
 const historyList = document.getElementById('historyList');
 
-// 仅显示用：加千分位
 function formatNumWithComma(str){
   if(str === '错误') return str;
   const parts = str.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return parts.join('.');
 }
-
-// 动态字号
 function setFontSize(){
   const len = (expr||'0').length;
   let fs = 42;
-  if(len>12) fs=34;
-  if(len>22) fs=28;
-  if(len>35) fs=22;
+  if(len>12) fs=34; if(len>22) fs=28; if(len>35) fs=22;
   screenEl.style.fontSize = fs+'px';
 }
-
 function updateUI(){
   const raw = expr || '0';
   screenEl.textContent = formatNumWithComma(raw);
   setFontSize();
 }
-
 function shakeScreen(){
-  screenEl.classList.add('shake');
-  setTimeout(()=>screenEl.classList.remove('shake'),400);
+  screenEl?.classList.add('shake');
+  setTimeout(()=>screenEl?.classList.remove('shake'),400);
 }
-
 function isOp(c){ return ['+','-','*','/'].includes(c); }
 function lastIsNumOrBracket(){ if(!expr) return false; return /[0-9\)]/.test(expr.slice(-1)); }
 
-// 去掉科学计数、末尾多余0
 function toPlainString(n){
   if(!isFinite(n)) return '错误';
   let s = String(n);
-  // 处理科学计数
-  if(/e/i.test(s)){
-    s = Number(n).toPrecision(MAX_DECIMAL);
-  }
+  if(/e/i.test(s)) s = Number(n).toPrecision(MAX_DECIMAL);
   s = parseFloat(s).toFixed(MAX_DECIMAL);
   s = s.replace(/(\.\d*?[1-9])0+$/, '$1').replace(/\.0+$/, '');
   return s === '' ? '0' : s;
 }
 
-// 安全求值（⚠️ 这里彻底移除整条表达式 BigInt；以后需要再单独做大数库）
 function safeEval(str){
   try{
     let s = str.replace(/\s/g,'');
-    // 白名单校验
     if(!/^[\d\.\+\-\*\/\(\)]*$/.test(s)) return null;
-    // 括号配对
     const left = (s.match(/\(/g)||[]).length;
     const right = (s.match(/\)/g)||[]).length;
     if(left !== right) return null;
-
     const fn = new Function('"use strict";return (' + s + ')');
     const r = fn();
     if(!isFinite(r)) return null;
     return Number(r.toFixed(MAX_DECIMAL));
-  }catch(e){
-    console.error('safeEval err:',e);
-    return null;
-  }
+  }catch(e){ console.error('safeEval',e); return null; }
 }
 
 function calcInput(ch){
   if(expr === '错误'){ expr=''; justCalculated=false; }
   if(expr.length >= MAX_EXPR_LEN) return;
-
-  if(justCalculated){
-    if(/[0-9\(]/.test(ch)) expr='';
-    justCalculated = false;
-  }
-
-  // 显示符号转运算符号
-  if(ch === '÷') ch='/';
-  if(ch === '×') ch='*';
-  if(ch === '−') ch='-';
+  if(justCalculated){ if(/[0-9\(]/.test(ch)) expr=''; justCalculated=false; }
+  if(ch === '÷') ch='/'; if(ch === '×') ch='*'; if(ch === '−') ch='-';
 
   if(isOp(ch)){
-    if(!expr){
-      if(ch==='-') expr += ch;
-      updateUI(); return;
-    }
+    if(!expr){ if(ch==='-') expr += ch; updateUI(); return; }
     const last = expr.slice(-1);
     if(isOp(last)) expr = expr.slice(0,-1)+ch;
     else if(last==='('){ if(ch==='-') expr+=ch; }
     else expr+=ch;
   }else if(ch === '('){
-    if(expr && lastIsNumOrBracket()) expr += '*';
-    expr += '(';
+    if(expr && lastIsNumOrBracket()) expr += '*'; expr += '(';
   }else if(ch === ')'){
     const lc=(expr.match(/\(/g)||[]).length;
     const rc=(expr.match(/\)/g)||[]).length;
     if(lc>rc && lastIsNumOrBracket()) expr += ')';
   }else{
-    if(expr==='0' && /[0-9]/.test(ch)) expr=ch;
-    else expr+=ch;
+    if(expr==='0' && /[0-9]/.test(ch)) expr=ch; else expr+=ch;
   }
   updateUI();
 }
@@ -286,17 +510,14 @@ function calcDot(){
   if(expr==='错误'){ expr=''; justCalculated=false; }
   if(justCalculated){ expr=''; justCalculated=false; }
   if(expr.length>=MAX_EXPR_LEN) return;
-
   const parts = expr.split(/[\+\-\*\/\(\)]/);
   const lastPart = parts[parts.length-1];
   if(!lastPart.includes('.')){
-    if(lastPart===''||lastPart==='-') expr+='0.';
-    else expr+='.';
+    if(lastPart===''||lastPart==='-') expr+='0.'; else expr+='.';
   }
   updateUI();
 }
 
-// 取末尾数字（带校验）
 function _getLastNumberInfo(){
   if(!expr) return null;
   const m = expr.match(/(-?[\d.]+)$/);
@@ -305,90 +526,38 @@ function _getLastNumberInfo(){
   if(isNaN(num)) return null;
   return { before:expr.slice(0,expr.length-m[1].length), num:num };
 }
-
-function calcMinus(){
-  const info = _getLastNumberInfo();
-  if(!info) return;
-  expr = info.before + (-info.num);
-  justCalculated = false;
-  updateUI();
-}
-
-function calcPercent(){
-  const info = _getLastNumberInfo();
-  if(!info) return;
-  expr = info.before + (info.num / 100);
-  justCalculated = false;
-  updateUI();
-}
-
-function calcSquare(){
-  const info = _getLastNumberInfo();
-  if(!info) return;
-  expr = info.before + (info.num * info.num);
-  justCalculated = false;
-  updateUI();
-}
-
-function calcClear(){
-  expr=''; justCalculated=false;
-  preEl.textContent='';
-  updateUI();
-}
-
-function calcDel(){
-  if(expr==='错误') expr='';
-  else expr = expr.slice(0,-1);
-  justCalculated = false;
-  preEl.textContent='';
-  updateUI();
-}
+function calcMinus(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+(-i.num); updateUI(); }
+function calcPercent(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+(i.num/100); updateUI(); }
+function calcSquare(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+(i.num*i.num); updateUI(); }
+function calcClear(){ expr=''; justCalculated=false; preEl.textContent=''; updateUI(); }
+function calcDel(){ if(expr==='错误')expr='';else expr=expr.slice(0,-1); preEl.textContent=''; updateUI(); }
 
 function pushHistory(formula, resStr){
   history.unshift({ f:formula, r:resStr });
-  if(history.length>MAX_HISTORY) history.pop();
-  renderHistory();
+  if(history.length>MAX_HISTORY) history.pop(); renderHistory();
 }
-
 function renderHistory(){
-  historyList.innerHTML = '';
+  historyList.innerHTML='';
   history.forEach(h=>{
-    const div = document.createElement('div');
-    div.className = 'history-item';
-    div.textContent = `${h.f} = ${h.r}`;
-    div.onclick = ()=>{
-      expr = h.r;
-      justCalculated = false;
-      preEl.textContent = '';
-      updateUI();
-      historyPanel.classList.remove('show');
-    };
-    historyList.appendChild(div);
+    const d=document.createElement('div'); d.className='history-item';
+    d.textContent=`${h.f} = ${h.r}`;
+    d.onclick=()=>{ expr=h.r; justCalculated=false; preEl.textContent=''; updateUI(); historyPanel.classList.remove('show'); };
+    historyList.appendChild(d);
   });
 }
-
 function toggleHistory(){ historyPanel.classList.toggle('show'); }
 function clearHistory(){ history=[]; renderHistory(); }
 
 function calcEqual(){
   if(!expr) return;
-  const src = expr;
-  const res = safeEval(expr);
-  if(res===null){
-    expr='错误'; shakeScreen(); justCalculated=false;
-  }else{
-    const s = toPlainString(res);
-    preEl.textContent = src + ' =';
-    pushHistory(src,s);
-    expr = s;
-    justCalculated = true;
-  }
+  const src=expr; const res=safeEval(expr);
+  if(res===null){ expr='错误'; shakeScreen(); justCalculated=false; }
+  else{ const s=toPlainString(res); preEl.textContent=src+' ='; pushHistory(src,s); expr=s; justCalculated=true; }
   updateUI();
 }
 
-// 键盘监听（也加上安全兜底）
 document.addEventListener('keydown',e=>safeWrap(()=>{
-  const k = e.key;
+  const k=e.key;
   if(expr.length>=MAX_EXPR_LEN && /[\d\.\+\-\*\/\(\)]/.test(k)) return;
   if(/[\d\+\-\*\/\(\)\.]/.test(k)) calcInput(k);
   else if(k==='Enter'||k==='=') calcEqual();
@@ -396,8 +565,206 @@ document.addEventListener('keydown',e=>safeWrap(()=>{
   else if(k==='Backspace') calcDel();
 }));
 
-updateUI();
-renderHistory();
+updateUI(); renderHistory();
+
+// ---------- 地图查看器（兼容GitHub Pages，crossOrigin处理跨域） ----------
+const mapImages = {
+  "world":"./world.jpg",
+  "china-admin":"./china-admin.jpg",
+  "china-terrain":"./china-terrain.jpg",
+  "gd":"./gd.jpg"
+};
+
+const viewImg = document.getElementById('viewImg');
+const mapSelect = document.getElementById('mapSelect');
+const loadHint = document.getElementById('loadHint');
+
+let scale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let isDrag = false;
+let lastX = 0;
+let lastY = 0;
+
+function applyTransform(){
+  viewImg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+}
+function resetMapView(){
+  scale = 1; offsetX = 0; offsetY = 0; applyTransform();
+}
+
+function setMapSrc(key){
+  loadHint.style.display = 'block';
+  loadHint.textContent = '地图加载中…';
+  const url = mapImages[key];
+  const tempImg = new Image();
+  tempImg.crossOrigin = "anonymous";
+  tempImg.onload = ()=>{
+    viewImg.style.backgroundImage = `url("${url}")`;
+    loadHint.style.display = 'none';
+    resetMapView();
+  };
+  tempImg.onerror = ()=>{
+    loadHint.textContent = '⚠️ 读取失败：检查图片文件名大小写、是否上传到Pages绑定分支根目录';
+  };
+  tempImg.src = url;
+}
+
+mapSelect.addEventListener('change', e=> setMapSrc(e.target.value));
+setMapSrc(mapSelect.value);
+
+document.getElementById('viewWrap').addEventListener('wheel', e=>{
+  e.preventDefault();
+  const d = e.deltaY > 0 ? -0.12 : 0.12;
+  scale = Math.max(0.5, Math.min(scale + d, 4));
+  applyTransform();
+},{passive:false});
+
+viewImg.addEventListener('mousedown',e=>{ isDrag=true; lastX=e.clientX; lastY=e.clientY; });
+window.addEventListener('mousemove',e=>{
+  if(!isDrag) return;
+  offsetX += e.clientX - lastX; offsetY += e.clientY - lastY;
+  lastX=e.clientX; lastY=e.clientY; applyTransform();
+});
+window.addEventListener('mouseup',()=>{ isDrag=false; });
+
+let touchId = null;
+viewImg.addEventListener('touchstart',e=>{
+  if(touchId!==null)return;
+  const t = e.changedTouches[0]; touchId = t.identifier;
+  isDrag=true; lastX=t.clientX; lastY=t.clientY;
+},{passive:true});
+window.addEventListener('touchmove',e=>{
+  if(!isDrag)return;
+  for(let t of e.changedTouches){
+    if(t.identifier===touchId){
+      offsetX += t.clientX-lastX; offsetY += t.clientY-lastY;
+      lastX=t.clientX; lastY=t.clientY; applyTransform(); break;
+    }
+  }
+},{passive:true});
+window.addEventListener('touchend',e=>{
+  for(let t of e.changedTouches){
+    if(t.identifier===touchId){ touchId=null; isDrag=false; break; }
+  }
+});
+
+// ---------- 证书奖状生成器 ----------
+document.getElementById('dateInput').valueAsDate = new Date();
+let currentTemplate = 1;
+
+function selectTemplate(num) {
+  currentTemplate = num;
+  document.getElementById('templateSel').value = num;
+  document.querySelectorAll('#page-cert .template-card[data-tpl]').forEach(el => el.classList.remove('active'));
+  document.querySelector(`#page-cert .template-card[data-tpl="${num}"]`).classList.add('active');
+  renderPreview();
+}
+
+function updateTypeCard() {
+  const type = document.querySelector('#page-cert input[name="docType"]:checked').value;
+  document.getElementById('typeCertCard').classList.toggle('active', type === 'cert');
+  document.getElementById('typeAwardCard').classList.toggle('active', type === 'award');
+}
+
+// 生成半圆形公章文字
+function createStamp(stampText) {
+  const text = stampText.trim() || '公章';
+  const chars = text.split('');
+  const total = chars.length;
+  const radius = 56;
+  const angleStep = 180 / Math.max(total - 1, 1);
+  const startAngle = 90;
+
+  let ringHtml = '';
+  chars.forEach((ch, i) => {
+    const angle = startAngle - i * angleStep;
+    ringHtml += `<span style="position:absolute;top:0;left:50%;width:14px;height:112px;transform-origin:center 56px;transform:translateX(-50%) rotate(${angle}deg);text-align:center;font-weight:900;font-size:14px;color:#b91c1c;">${ch}</span>`;
+  });
+
+  return `
+    <div class="stamp">
+      <div class="stamp-ring-text">${ringHtml}</div>
+      <div class="stamp-star">★</div>
+      <div class="stamp-center">公 章</div>
+    </div>
+  `;
+}
+
+function renderPreview() {
+  const docType = document.querySelector('#page-cert input[name="docType"]:checked').value;
+  updateTypeCard();
+
+  const title = document.getElementById('title').value || '证书';
+  const name = document.getElementById('name').value || '姓名';
+  const content = document.getElementById('content').value || '请填写正文内容。';
+  const issuer = document.getElementById('issuer').value || '发奖人';
+  const stampText = document.getElementById('stampText').value || '公章';
+  const dateRaw = document.getElementById('dateInput').value;
+
+  let showDate = '';
+  if (dateRaw) {
+    const d = new Date(dateRaw);
+    showDate = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+  const subTitleText = docType === "cert" ? "CERTIFICATE" : "荣 誉 奖 状";
+
+  const previewBox = document.getElementById('previewBox');
+  previewBox.innerHTML = '';
+
+  let paper = document.createElement('div');
+  paper.className = `template${currentTemplate} cert-paper`;
+
+  let inner = `
+        <div class="title">${title}</div>
+        <div class="subtitle">${subTitleText}</div>
+        <div class="name">${name}</div>
+        <div class="content">${content}</div>
+        <div class="footer">
+          <div>发奖人：${issuer}</div>
+          <div style="margin-top:8px;">日期：${showDate}</div>
+        </div>
+        ${createStamp(stampText)}
+    `;
+
+  paper.innerHTML = inner;
+  previewBox.appendChild(paper);
+}
+
+async function downloadImage() {
+  const btn = document.getElementById('downloadBtn');
+  const mask = document.getElementById('loadingMask');
+
+  if (!document.querySelector('#page-cert .cert-paper')) {
+    alert('预览未生成，请稍后重试。');
+    return;
+  }
+
+  btn.disabled = true;
+  mask.classList.add('show');
+
+  try {
+    const target = document.querySelector('#page-cert .cert-paper');
+    const canvas = await html2canvas(target, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: null
+    });
+
+    const link = document.createElement('a');
+    link.download = `证书_${document.getElementById('name').value || '导出'}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (err) {
+    alert('图片生成失败，请重试。');
+    console.error(err);
+  } finally {
+    mask.classList.remove('show');
+    btn.disabled = false;
+  }
+}
+
+renderPreview();
 </script>
 </body>
 </html>
