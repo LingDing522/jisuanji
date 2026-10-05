@@ -249,7 +249,7 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
 #page-lottery .wheel-stage.show{display:block;}
 #page-lottery .wheel-holder{position:relative;width:min(300px,100%);margin:10px auto;aspect-ratio:1/1;}
 #page-lottery canvas{width:100%;height:100%;display:block;}
-#page-lottery .pointer{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:30px solid #1a202c;z-index:5;}
+#page-lottery .pointer{position:absolute;top:0;left:50%;transform:translate(-50%,-6px);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:30px solid #1a202c;z-index:5;}
 #page-lottery .pointer::after{content:"";position:absolute;left:-22px;top:-34px;width:44px;height:44px;border:5px solid #3182ce;border-radius:50%;background:#fff;}
 #page-lottery .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;background:linear-gradient(135deg,#3182ce,#2b6cb0);border-radius:50%;z-index:4;box-shadow:0 2px 6px rgba(0,0,0,.3);}
 #page-lottery .spin-result{text-align:center;font-size:22px;font-weight:700;color:#b7791f;min-height:32px;margin:10px 0;}
@@ -257,6 +257,21 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
 #page-lottery .modal.show{display:flex;}
 #page-lottery .modal-box{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:360px;}
 #page-lottery .modal-box h3{color:#2d3748;margin-bottom:8px;}
+
+/* === 新增：2048 / 扫雷 小工具页（游戏代码原样内嵌于本文件，不改动） === */
+#page-home .home-btn:nth-child(5){
+  background:linear-gradient(135deg,#e53e3e,#c53030);
+}
+#page-home .home-btn:nth-child(6){
+  background:linear-gradient(135deg,#2b6cb0,#1e40af);
+}
+.game-page{max-width:520px;}
+.game-frame{
+  width:100%;border:none;display:block;border-radius:14px;
+  background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.12);
+}
+.game-frame-2048{height:600px;}
+.game-frame-mine{height:720px;}
 </style>
 </head>
 <body>
@@ -281,6 +296,8 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
     <button class="home-btn" onclick="safeWrap(showPage,'page-map')">🗺️ 地图查看</button>
     <button class="home-btn" onclick="safeWrap(showPage,'page-cert')">🏆 证书奖状</button>
     <button class="home-btn" onclick="safeWrap(showPage,'page-lottery')">🎯 抽奖工具</button>
+    <button class="home-btn" onclick="safeWrap(showPage,'page-2048')">🎮 2048</button>
+    <button class="home-btn" onclick="safeWrap(showPage,'page-minesweeper')">💣 扫雷</button>
   </div>
 </div>
 
@@ -337,7 +354,7 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
 <!-- 地图查看页 -->
 <div id="page-map" class="page map-page">
   <h2 style="text-align:center;margin-bottom:12px;color:#2d3748;">地图查看器</h2>
-  <div class="tip">提示：双指/滚轮放大缩小、按住拖动平移；「获取标准地图」打开自然资源部官网</div>
+  <div class="tip">提示：滚轮放大缩小、按住拖动平移；「获取标准地图」打开自然资源部官网</div>
 
   <select id="mapSelect" class="map-select">
     <option value="world">世界政区图</option>
@@ -347,7 +364,7 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
   </select>
 
   <div class="map-actions">
-    <button class="btn-goto-official" onclick="window.open('http://bzdt.ch.mnr.gov.cn/','_blank')">获取标准地图</button>
+    <button class="btn-goto-official" onclick="window.open('https://bzdt.ch.mnr.gov.cn/','_blank')">获取标准地图</button>
     <button class="btn-reset-view" onclick="resetMapView()">重置视图</button>
   </div>
 
@@ -557,6 +574,846 @@ h1{color:#2d3748;margin-bottom:32px;font-weight:600;font-size:28px;}
   <button class="back-btn" onclick="safeWrap(showPage,'page-home')">返回首页</button>
 </div>
 
+<!-- 2048 游戏页（代码以 srcdoc 原样内嵌于本文件，未改动） -->
+<div id="page-2048" class="page game-page">
+  <h2 style="text-align:center;margin-bottom:12px;color:#2d3748;">🎮 2048</h2>
+  <iframe class="game-frame game-frame-2048" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot;&gt;
+&lt;title&gt;2048&lt;/title&gt;
+&lt;style&gt;
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:&quot;Helvetica Neue&quot;,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+body{
+  background-color: #f3ede0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:16px 10px;
+  min-height:100vh;
+}
+.header{
+  width:min(92vw,420px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+  gap:12px;
+}
+h1{
+  font-size:clamp(36px,12vw,56px);
+  color:#72685f;
+  font-weight:bold;
+}
+.score-wrap{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.score-box{
+  background:#b8a99a;
+  padding:8px 12px;
+  border-radius:8px;
+  color:#fff;
+  text-align:center;
+  min-width:72px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+}
+.score-box span{
+  font-size:22px;
+  font-weight:bold;
+}
+#newGame{
+  background:#82705f;
+  color:white;
+  border:none;
+  padding:10px 14px;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:16px;
+  box-shadow:0 3px 6px rgba(0,0,0,0.12);
+  transition: all 0.2s;
+}
+#newGame:hover{
+  background:#706050;
+}
+#newGame:active{
+  transform:scale(0.96);
+}
+.container{
+  width:min(92vw,420px);
+  height:min(92vw,420px);
+  background:#b8a99a;
+  border-radius:12px;
+  padding:14px;
+  position:relative;
+  touch-action:none;
+  box-shadow:0 6px 16px rgba(0,0,0,0.15);
+}
+.grid-cell{
+  width:calc((100% - 56px)/4);
+  height:calc((100% - 56px)/4);
+  background:#cbc0b1;
+  border-radius:8px;
+  position:absolute;
+}
+.number-cell{
+  width:calc((100% - 56px)/4);
+  height:calc((100% - 56px)/4);
+  border-radius:8px;
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  color:#72685f;
+  transition:0.18s ease-in-out;
+  font-size:clamp(18px,6vw,32px);
+  box-shadow:0 2px 4px rgba(0,0,0,0.08);
+}
+/* 方块合并放大动画 */
+.number-cell.pop{
+  animation: popAnim 0.2s;
+}
+@keyframes popAnim{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.12)}
+  100%{transform:scale(1)}
+}
+.mask{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(255,255,255,0.72);
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  z-index:10;
+  backdrop-filter: blur(2px);
+}
+.mask h2{
+  font-size:clamp(28px,9vw,40px);
+  color:#72685f;
+  margin-bottom:10px
+}
+.mask p{
+  font-size:18px;
+  color:#72685f;
+  margin-bottom:20px
+}
+.mask button{
+  background:#82705f;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  font-size:18px;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.mask button:hover{
+  background:#706050;
+}
+.mask button:active{
+  transform:scale(0.96);
+}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;header&quot;&gt;
+  &lt;h1&gt;2048&lt;/h1&gt;
+  &lt;div class=&quot;score-wrap&quot;&gt;
+    &lt;div class=&quot;score-box&quot;&gt;本局&lt;br&gt;&lt;span id=&quot;currentScore&quot;&gt;0&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;score-box&quot;&gt;最高分&lt;br&gt;&lt;span id=&quot;bestScore&quot;&gt;0&lt;/span&gt;&lt;/div&gt;
+    &lt;button id=&quot;newGame&quot;&gt;新游戏&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;container&quot; id=&quot;gameContainer&quot;&gt;
+  &lt;div class=&quot;mask&quot; id=&quot;gameOver&quot;&gt;
+    &lt;h2&gt;游戏结束&lt;/h2&gt;
+    &lt;p&gt;没有可移动的方块了&lt;/p&gt;
+    &lt;button onclick=&quot;restartGame()&quot;&gt;再来一局&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;mask&quot; id=&quot;winMask&quot;&gt;
+    &lt;h2&gt;🎉 胜利！&lt;/h2&gt;
+    &lt;p&gt;成功合成2048！可以继续挑战更高分数&lt;/p&gt;
+    &lt;button onclick=&quot;closeWin()&quot;&gt;继续游戏&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const size = 4;
+let grid = [];
+let currentScore = 0;
+let isWin = false;
+const container = document.getElementById(&quot;gameContainer&quot;);
+const currentScoreDom = document.getElementById(&quot;currentScore&quot;);
+const bestScoreDom = document.getElementById(&quot;bestScore&quot;);
+const gameOverDom = document.getElementById(&quot;gameOver&quot;);
+const winMask = document.getElementById(&quot;winMask&quot;);
+
+// 读取本地最高分
+function getBestScore(){
+  const saved = localStorage.getItem(&quot;2048BestScore&quot;);
+  return saved ? parseInt(saved) : 0;
+}
+let bestScore = getBestScore();
+bestScoreDom.innerText = bestScore;
+
+// 保存最高分
+function saveBestScore(){
+  localStorage.setItem(&quot;2048BestScore&quot;, bestScore);
+  bestScoreDom.innerText = bestScore;
+}
+
+// 绘制背景格子
+function initBg(){
+  container.querySelectorAll(&quot;.grid-cell&quot;).forEach(e=&gt;e.remove());
+  const cellSize = `calc((100% - 56px)/4)`;
+  for(let i=0;i&lt;size;i++){
+    for(let j=0;j&lt;size;j++){
+      const div = document.createElement(&quot;div&quot;);
+      div.className = &quot;grid-cell&quot;;
+      div.style.width = cellSize;
+      div.style.height = cellSize;
+      div.style.left = `calc(14px + ${j} * (${cellSize} + 14px))`;
+      div.style.top = `calc(14px + ${i} * (${cellSize} + 14px))`;
+      container.appendChild(div);
+    }
+  }
+}
+
+// 初始化游戏
+function initGame(){
+  grid = Array(size).fill().map(()=&gt;Array(size).fill(0));
+  currentScore = 0;
+  isWin = false;
+  currentScoreDom.innerText = currentScore;
+  gameOverDom.style.display = &quot;none&quot;;
+  winMask.style.display = &quot;none&quot;;
+  clearNumber();
+  randomCell();
+  randomCell();
+  render();
+}
+
+function clearNumber(){
+  container.querySelectorAll(&quot;.number-cell&quot;).forEach(e=&gt;e.remove());
+}
+
+// 随机生成2或4
+function randomCell(){
+  let empty = [];
+  for(let i=0;i&lt;size;i++){
+    for(let j=0;j&lt;size;j++){
+      if(grid[i][j]===0) empty.push({x:i,y:j});
+    }
+  }
+  if(empty.length===0) return;
+  const p = empty[Math.floor(Math.random()*empty.length)];
+  grid[p.x][p.y] = Math.random()&gt;0.2 ? 2 :4;
+}
+
+// 方块配色
+const colorMap = {
+  2:&quot;#eee4da&quot;,
+  4:&quot;#ede0c8&quot;,
+  8:&quot;#f2b179&quot;,
+  16:&quot;#f59563&quot;,
+  32:&quot;#f67c5f&quot;,
+  64:&quot;#f65e3b&quot;,
+  128:&quot;#edcf72&quot;,
+  256:&quot;#edcc61&quot;,
+  512:&quot;#edc850&quot;,
+  1024:&quot;#edc53f&quot;,
+  2048:&quot;#edc22e&quot;,
+  4096:&quot;#3c3a32&quot;,
+  8192:&quot;#2b2824&quot;
+}
+
+// 渲染方块
+function render(){
+  clearNumber();
+  const cellSize = `calc((100% - 56px)/4)`;
+  for(let i=0;i&lt;size;i++){
+    for(let j=0;j&lt;size;j++){
+      const val = grid[i][j];
+      if(val!==0){
+        const div = document.createElement(&quot;div&quot;);
+        div.className=&quot;number-cell&quot;;
+        div.innerText = val;
+        div.style.width = cellSize;
+        div.style.height = cellSize;
+        div.style.left = `calc(14px + ${j} * (${cellSize} + 14px))`;
+        div.style.top = `calc(14px + ${i} * (${cellSize} + 14px))`;
+        div.style.background = colorMap[val] || &quot;#3c3a32&quot;;
+        if(val&gt;=8) div.style.color=&quot;#fff&quot;;
+        container.appendChild(div);
+      }
+    }
+  }
+}
+
+// 单行左移
+function moveLeft(row){
+  let arr = row.filter(v=&gt;v!==0);
+  for(let i=0;i&lt;arr.length-1;i++){
+    if(arr[i]===arr[i+1]){
+      arr[i] *=2;
+      currentScore += arr[i];
+      arr[i+1]=0;
+    }
+  }
+  arr = arr.filter(v=&gt;v!==0);
+  while(arr.length&lt;size) arr.push(0);
+  return arr;
+}
+
+// 矩阵旋转
+function rotate(mat){
+  let res = Array(size).fill().map(()=&gt;Array(size).fill(0));
+  for(let i=0;i&lt;size;i++)
+    for(let j=0;j&lt;size;j++)
+      res[j][size-1-i] = mat[i][j];
+  return res;
+}
+
+function move(dir){
+  let old = JSON.parse(JSON.stringify(grid));
+  if(dir===&quot;left&quot;) grid = grid.map(r=&gt;moveLeft(r));
+  if(dir===&quot;right&quot;){
+    grid = grid.map(r=&gt;moveLeft(r.reverse()).reverse());
+  }
+  if(dir===&quot;up&quot;){
+    grid = rotate(grid);
+    grid = grid.map(r=&gt;moveLeft(r));
+    grid = rotate(rotate(rotate(grid)));
+  }
+  if(dir===&quot;down&quot;){
+    grid = rotate(grid);
+    grid = grid.map(r=&gt;moveLeft(r.reverse()).reverse());
+    grid = rotate(rotate(rotate(grid)));
+  }
+  currentScoreDom.innerText = currentScore;
+  // 更新最高分
+  if(currentScore &gt; bestScore){
+    bestScore = currentScore;
+    saveBestScore();
+  }
+  if(JSON.stringify(old)!==JSON.stringify(grid)){
+    randomCell();
+    render();
+    // 给新生成方块加弹出动画
+    const cells = container.querySelectorAll(&quot;.number-cell&quot;);
+    cells.forEach(el=&gt;el.classList.add(&quot;pop&quot;));
+    setTimeout(()=&gt;{
+      cells.forEach(el=&gt;el.classList.remove(&quot;pop&quot;));
+    },200)
+    checkWin();
+    checkGameOver();
+  }
+}
+
+// 判断胜利（合成2048）
+function checkWin(){
+  if(isWin) return;
+  for(let i=0;i&lt;size;i++){
+    for(let j=0;j&lt;size;j++){
+      if(grid[i][j] &gt;=2048){
+        isWin = true;
+        winMask.style.display=&quot;flex&quot;;
+        return;
+      }
+    }
+  }
+}
+function closeWin(){
+  winMask.style.display=&quot;none&quot;;
+}
+
+// 判断是否还能移动
+function canMove(){
+  for(let i=0;i&lt;size;i++){
+    for(let j=0;j&lt;size;j++){
+      if(grid[i][j]===0) return true;
+      if(j&lt;3 &amp;&amp; grid[i][j]===grid[i][j+1]) return true;
+      if(i&lt;3 &amp;&amp; grid[i][j]===grid[i+1][j]) return true;
+    }
+  }
+  return false;
+}
+function checkGameOver(){
+  if(!canMove()) gameOverDom.style.display=&quot;flex&quot;;
+}
+
+// 键盘控制（电脑）
+document.addEventListener(&quot;keydown&quot;,e=&gt;{
+  const map = {ArrowLeft:&quot;left&quot;,ArrowRight:&quot;right&quot;,ArrowUp:&quot;up&quot;,ArrowDown:&quot;down&quot;};
+  if(map[e.key]){
+    e.preventDefault();
+    move(map[e.key]);
+  }
+})
+
+// 触屏滑动（手机）
+let touchStartX = 0;
+let touchStartY = 0;
+container.addEventListener(&#x27;touchstart&#x27;, e =&gt; {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+});
+container.addEventListener(&#x27;touchend&#x27;, e =&gt; {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  const minDis = 30;
+  if(Math.abs(dx) &gt; Math.abs(dy)){
+    if(dx &gt; minDis) move(&quot;right&quot;);
+    else if(dx &lt; -minDis) move(&quot;left&quot;);
+  }else{
+    if(dy &gt; minDis) move(&quot;down&quot;);
+    else if(dy &lt; -minDis) move(&quot;up&quot;);
+  }
+});
+
+function restartGame(){
+  initGame();
+}
+document.getElementById(&quot;newGame&quot;).onclick = restartGame;
+
+initBg();
+initGame();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="2048"></iframe>
+  <button class="back-btn" onclick="safeWrap(showPage,'page-home')">返回首页</button>
+</div>
+
+<!-- 扫雷游戏页（代码以 srcdoc 原样内嵌于本文件，未改动） -->
+<div id="page-minesweeper" class="page game-page">
+  <h2 style="text-align:center;margin-bottom:12px;color:#2d3748;">💣 扫雷</h2>
+  <iframe class="game-frame game-frame-mine" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-CN&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot;&gt;
+&lt;title&gt;扫雷 · 我的工具库&lt;/title&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; rx=&#x27;7&#x27; fill=&#x27;%234f46e5&#x27;/%3E%3Cpath d=&#x27;M16 7l2.2 4.6 5 .7-3.6 3.5.9 5L16 18.2l-4.5 2.6.9-5-3.6-3.5 5-.7z&#x27; fill=&#x27;%23fff&#x27;/%3E%3C/svg%3E&quot;&gt;
+&lt;style&gt;
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --ink:#2d3748;          /* 主文字 */
+  --muted:#718096;        /* 次要文字 */
+  --accent:#4f46e5;       /* 主色：靛蓝 */
+  --accent-soft:rgba(79,70,229,.1);
+  --card:#ffffff;
+  --card-edge:#e5e7eb;
+  --cell-closed:#e3e9f2;  /* 未翻开格子 */
+  --cell-closed-edge:#cfd9e6;
+  --cell-open:#ffffff;    /* 已翻开格子 */
+  --cell-open-edge:#dfe6ef;
+  --red:#ef4444;
+  --yellow:#f59e0b;
+  --ok:#10b981;
+}
+html,body{height:100%}
+body{
+  font-family:system-ui,-apple-system,&quot;PingFang SC&quot;,&quot;Microsoft YaHei&quot;,sans-serif;
+  background:linear-gradient(135deg,#e8f4ff 0%,#dde3ff 100%);
+  min-height:100vh;display:flex;justify-content:center;
+  padding:22px 14px 34px;color:var(--ink);
+}
+.app{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:14px}
+
+/* 工具标题 */
+.tool-head{text-align:center;margin:2px 0 4px}
+.tool-head .ico{font-size:34px;line-height:1}
+.tool-head h1{font-size:24px;font-weight:600;margin-top:4px;letter-spacing:1px}
+.tool-head .en{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+
+/* 难度切换：白底胶囊 */
+.levels{
+  display:flex;gap:4px;background:#fff;border-radius:999px;padding:5px;
+  box-shadow:0 4px 14px rgba(15,23,42,.10);
+}
+.levels button{
+  border:none;background:transparent;color:var(--muted);
+  font-size:13px;padding:7px 15px;border-radius:999px;cursor:pointer;
+  font-family:inherit;transition:all .18s;
+}
+.levels button.on{background:var(--accent);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(79,70,229,.35)}
+
+/* 状态面板：白卡片 */
+.status{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  background:#fff;border-radius:16px;padding:10px 16px;
+  box-shadow:0 10px 30px rgba(15,23,42,.08);
+}
+.meter{display:flex;flex-direction:column;align-items:center;min-width:62px}
+.meter .num{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--red)}
+.meter.time .num{color:var(--accent)}
+.meter .lbl{font-size:11px;color:var(--muted);margin-top:1px}
+/* 笑脸重开 */
+.smiley{
+  width:54px;height:54px;border-radius:50%;cursor:pointer;
+  background:linear-gradient(135deg,#ffd76e,#f6b63a);
+  border:none;display:grid;place-items:center;
+  box-shadow:0 4px 12px rgba(217,154,28,.35),inset 0 2px 0 rgba(255,255,255,.55);
+  transition:transform .12s;
+}
+.smiley:active{transform:scale(.92)}
+.smiley svg{width:34px;height:34px}
+
+/* 棋盘卡片 */
+.board-card{
+  width:100%;background:#fff;border-radius:18px;padding:12px;
+  box-shadow:0 10px 30px rgba(15,23,42,.08);
+}
+.board-wrap{width:100%;overflow:auto;border-radius:12px}
+#board{display:grid;grid-template-columns:repeat(var(--x),var(--cell));gap:3px;margin:auto;width:max-content}
+.cell{
+  width:var(--cell);height:var(--cell);
+  background:var(--cell-closed);border:1px solid var(--cell-closed-edge);
+  border-radius:7px;display:grid;place-items:center;cursor:pointer;user-select:none;
+  font-weight:800;font-size:max(12px,calc(var(--cell)*.44));
+  color:#14202b;transition:background .08s,transform .08s;
+}
+.cell:active{transform:scale(.93)}
+.cell.open{background:var(--cell-open);border-color:var(--cell-open-edge);cursor:default;box-shadow:inset 0 1px 2px rgba(15,23,42,.04)}
+.cell.open:active{transform:none}
+.cell.boom{background:var(--red);border-color:#dc3c47;animation:pulse .5s ease 2}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+.cell.wrong{background:#fbd0d3}
+.cell svg{width:66%;height:66%}
+/* 数字色 */
+.c1{color:#1d4ed8}.c2{color:#15803d}.c3{color:#dc2626}.c4{color:#6d28d9}
+.c5{color:#b45309}.c6{color:#0e7490}.c7{color:#334155}.c8{color:#64748b}
+
+/* 底部提示 */
+.hint{font-size:12px;color:var(--muted);text-align:center;line-height:1.8}
+.hint b{color:var(--accent);font-weight:600}
+.hint .k{display:inline-block;background:#fff;border:1px solid var(--card-edge);padding:0 8px;border-radius:6px;margin:0 2px}
+
+/* 翻开 / 标旗 模式切换 */
+.mode-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mode-switch{
+  display:flex;background:#fff;border-radius:999px;padding:4px;
+  box-shadow:0 4px 14px rgba(15,23,42,.10);
+}
+.mode-switch button{
+  border:none;background:transparent;color:var(--muted);
+  font-size:12px;padding:6px 16px;border-radius:999px;cursor:pointer;
+  font-family:inherit;transition:all .18s;
+}
+.mode-switch button.on{background:var(--accent);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(79,70,229,.35)}
+.mode-tip{font-size:11px;color:var(--muted);white-space:nowrap}
+
+/* 结算浮层 */
+.overlay{position:fixed;inset:0;background:rgba(30,41,59,.45);display:none;place-items:center;z-index:50;backdrop-filter:blur(3px)}
+.overlay.show{display:grid}
+.modal{background:#fff;border-radius:18px;padding:26px 30px;text-align:center;max-width:320px;box-shadow:0 20px 50px rgba(15,23,42,.25);animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.86);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .face{font-size:36px;line-height:1}
+.modal h2{font-size:20px;margin:10px 0 6px;color:var(--ink)}
+.modal p{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.7}
+.modal .actions{display:flex;gap:8px;justify-content:center}
+.modal .actions button{
+  border:none;border-radius:10px;padding:10px 18px;font-size:13px;cursor:pointer;font-family:inherit;
+  background:#eef2f7;color:var(--ink);transition:background .15s;
+}
+.modal .actions .primary{background:var(--accent);color:#fff;font-weight:600;box-shadow:0 3px 10px rgba(79,70,229,.3)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;app&quot;&gt;
+  &lt;div class=&quot;tool-head&quot;&gt;
+    &lt;div class=&quot;ico&quot;&gt;💣&lt;/div&gt;
+    &lt;h1&gt;扫雷&lt;/h1&gt;
+    &lt;div class=&quot;en&quot;&gt;Minesweeper&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;levels&quot; id=&quot;levels&quot;&gt;
+    &lt;button data-lv=&quot;easy&quot; class=&quot;on&quot;&gt;初级&lt;/button&gt;
+    &lt;button data-lv=&quot;mid&quot;&gt;中级&lt;/button&gt;
+    &lt;button data-lv=&quot;hard&quot;&gt;高级&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;status&quot;&gt;
+    &lt;div class=&quot;meter&quot;&gt;&lt;span class=&quot;num&quot; id=&quot;minesLeft&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;lbl&quot;&gt;剩余雷&lt;/span&gt;&lt;/div&gt;
+    &lt;button class=&quot;smiley&quot; id=&quot;resetBtn&quot; title=&quot;重新开始&quot; aria-label=&quot;重新开始&quot;&gt;
+      &lt;svg id=&quot;face&quot; viewBox=&quot;0 0 32 32&quot;&gt;&lt;circle cx=&quot;16&quot; cy=&quot;16&quot; r=&quot;14&quot; fill=&quot;#fff7df&quot;/&gt;&lt;circle cx=&quot;11&quot; cy=&quot;12.5&quot; r=&quot;2.2&quot; fill=&quot;#3a2a14&quot;/&gt;&lt;circle cx=&quot;21&quot; cy=&quot;12.5&quot; r=&quot;2.2&quot; fill=&quot;#3a2a14&quot;/&gt;&lt;path d=&quot;M9 19c2.2 2.8 11.8 2.8 14 0&quot; stroke=&quot;#3a2a14&quot; stroke-width=&quot;2.4&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/svg&gt;
+    &lt;/button&gt;
+    &lt;div class=&quot;meter time&quot;&gt;&lt;span class=&quot;num&quot; id=&quot;timer&quot;&gt;00:00&lt;/span&gt;&lt;span class=&quot;lbl&quot;&gt;用时&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;mode-row&quot;&gt;
+    &lt;div class=&quot;mode-switch&quot; id=&quot;modeSwitch&quot;&gt;
+      &lt;button data-mode=&quot;reveal&quot; class=&quot;on&quot;&gt;翻 开&lt;/button&gt;
+      &lt;button data-mode=&quot;flag&quot;&gt;标 旗&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;span class=&quot;mode-tip&quot; id=&quot;modeTip&quot;&gt;点格子翻开&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;board-card&quot;&gt;
+    &lt;div class=&quot;board-wrap&quot;&gt;
+      &lt;div id=&quot;board&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;hint&quot;&gt;
+    点按翻开；切到&lt;b&gt;标旗&lt;/b&gt;模式可直接点格子插旗。&lt;br&gt;
+    桌面右键或长按也可插旗，点笑脸 &lt;b&gt;☺&lt;/b&gt; 原地重开。
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;overlay&quot; id=&quot;overlay&quot;&gt;
+  &lt;div class=&quot;modal&quot;&gt;
+    &lt;div class=&quot;face&quot; id=&quot;oFace&quot;&gt;🏆&lt;/div&gt;
+    &lt;h2 id=&quot;oTitle&quot;&gt;胜利！&lt;/h2&gt;
+    &lt;p id=&quot;oText&quot;&gt;&lt;/p&gt;
+    &lt;div class=&quot;actions&quot;&gt;
+      &lt;button id=&quot;oAgain&quot;&gt;再来一局&lt;/button&gt;
+      &lt;button id=&quot;oClose&quot; class=&quot;primary&quot;&gt;知道了&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// ===== 难度配置 =====
+const LEVELS = {
+  easy: {x:8,  y:9,  mines:10},
+  mid:  {x:16, y:16, mines:40},
+  hard: {x:30, y:16, mines:99}
+};
+const lvNames = {easy:&#x27;初级&#x27;, mid:&#x27;中级&#x27;, hard:&#x27;高级&#x27;};
+
+let cfg = LEVELS.easy;
+let mine=null, open=null, flag=null;
+let sX=0, sY=0;
+let started=false, over=false, won=false;
+let mineLeft=0, timeSec=0, timerId=null;
+let flagMode=false;   // false=翻开模式，true=标旗模式
+
+const boardEl=document.getElementById(&#x27;board&#x27;);
+const minesEl=document.getElementById(&#x27;minesLeft&#x27;);
+const timerEl=document.getElementById(&#x27;timer&#x27;);
+const faceEl=document.getElementById(&#x27;face&#x27;);
+
+// ===== SVG 图标 =====
+const ICON_MINE=&#x27;&lt;svg viewBox=&quot;0 0 24 24&quot;&gt;&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;9.5&quot; fill=&quot;#ef4444&quot; stroke=&quot;#7f1d1d&quot; stroke-width=&quot;1.2&quot;/&gt;&lt;circle cx=&quot;12&quot; cy=&quot;12&quot; r=&quot;3.6&quot; fill=&quot;#111&quot;/&gt;&lt;circle cx=&quot;15.2&quot; cy=&quot;8.8&quot; r=&quot;1.1&quot; fill=&quot;#fff&quot; opacity=&quot;.8&quot;/&gt;&lt;/svg&gt;&#x27;;
+const ICON_FLAG=&#x27;&lt;svg viewBox=&quot;0 0 24 24&quot;&gt;&lt;rect x=&quot;5.5&quot; y=&quot;3&quot; width=&quot;3&quot; height=&quot;18&quot; rx=&quot;1.5&quot; fill=&quot;#b45309&quot;/&gt;&lt;path d=&quot;M8 4h9l-2.5 3.2L17 10.4H8z&quot; fill=&quot;#f59e0b&quot; stroke=&quot;#b45309&quot; stroke-width=&quot;1&quot;/&gt;&lt;/svg&gt;&#x27;;
+
+// ===== 表情 =====
+function setFace(state){
+  const e=&#x27;&lt;circle cx=&quot;16&quot; cy=&quot;16&quot; r=&quot;14&quot; fill=&quot;#fff7df&quot;/&gt;&#x27;;
+  let extra;
+  if(state===&#x27;won&#x27;) extra=&#x27;&lt;path d=&quot;M8 14.5c2.5-3 13.5-3 16 0&quot; stroke=&quot;#3a2a14&quot; stroke-width=&quot;2.4&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;circle cx=&quot;20&quot; cy=&quot;12.5&quot; r=&quot;2.4&quot; fill=&quot;#3a2a14&quot;/&gt;&#x27;;
+  else if(state===&#x27;lost&#x27;) extra=&#x27;&lt;circle cx=&quot;11&quot; cy=&quot;12.5&quot; r=&quot;2.2&quot; fill=&quot;#3a2a14&quot;/&gt;&lt;circle cx=&quot;21&quot; cy=&quot;12.5&quot; r=&quot;2.2&quot; fill=&quot;#3a2a14&quot;/&gt;&lt;path d=&quot;M8 21c2.2-2.8 11.8-2.8 14 0&quot; stroke=&quot;#3a2a14&quot; stroke-width=&quot;2.4&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&#x27;;
+  else extra=&#x27;&lt;circle cx=&quot;11&quot; cy=&quot;12.5&quot; r=&quot;2.2&quot; fill=&quot;#3a2a14&quot;/&gt;&lt;circle cx=&quot;21&quot; cy=&quot;12.5&quot; r=&quot;2.2&quot; fill=&quot;#3a2a14&quot;/&gt;&lt;path d=&quot;M9 19c2.2 2.8 11.8 2.8 14 0&quot; stroke=&quot;#3a2a14&quot; stroke-width=&quot;2.4&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&#x27;;
+  faceEl.innerHTML=e+extra;
+}
+
+// ===== 初始化 =====
+function init(){
+  clearInterval(timerId); timerId=null;
+  sX=cfg.x; sY=cfg.y;
+  mine=Array.from({length:sY},()=&gt;Array(sX).fill(false));
+  open =Array.from({length:sY},()=&gt;Array(sX).fill(false));
+  flag =Array.from({length:sY},()=&gt;Array(sX).fill(false));
+  started=false; over=false; won=false;
+  mineLeft=cfg.mines; timeSec=0;
+  minesEl.textContent=mineLeft; timerEl.textContent=&#x27;00:00&#x27;;
+  setFace(&#x27;normal&#x27;);
+
+  const wide = window.innerWidth&gt;=768;
+  const cell = {easy:wide?38:32, mid:wide?26:22, hard:wide?22:19}[cfgKey()];
+  boardEl.style.setProperty(&#x27;--x&#x27;, sX);
+  boardEl.style.setProperty(&#x27;--cell&#x27;, cell+&#x27;px&#x27;);
+
+  boardEl.innerHTML=&#x27;&#x27;;
+  for(let y=0;y&lt;sY;y++) for(let x=0;x&lt;sX;x++){
+    const d=document.createElement(&#x27;div&#x27;);
+    d.className=&#x27;cell&#x27;; d.dataset.x=x; d.dataset.y=y;
+    d.addEventListener(&#x27;click&#x27;,()=&gt;{ flagMode ? toggleFlag(x,y) : reveal(x,y); });
+    d.addEventListener(&#x27;contextmenu&#x27;,e=&gt;{e.preventDefault();toggleFlag(x,y);});
+    bindLongPress(d,x,y);
+    boardEl.appendChild(d);
+  }
+  document.getElementById(&#x27;overlay&#x27;).classList.remove(&#x27;show&#x27;);
+}
+
+// 长按插旗（移动端无右键）
+function bindLongPress(cell,x,y){
+  let t=null, startedTouch=false;
+  cell.addEventListener(&#x27;touchstart&#x27;,e=&gt;{
+    if(open[y]&amp;&amp;open[y][x]) return;
+    startedTouch=true;
+    t=setTimeout(()=&gt;{ if(startedTouch){navigator.vibrate&amp;&amp;navigator.vibrate(15);toggleFlag(x,y);} },500);
+  },{passive:true});
+  cell.addEventListener(&#x27;touchend&#x27;,()=&gt;{clearTimeout(t);startedTouch=false;},{passive:true});
+  cell.addEventListener(&#x27;touchmove&#x27;,()=&gt;{clearTimeout(t);startedTouch=false;},{passive:true});
+}
+
+// 首次点击布雷：排除点击点及其周围
+function placeMines(fx,fy){
+  const pool=[];
+  for(let y=0;y&lt;sY;y++) for(let x=0;x&lt;sX;x++){
+    const near=Math.abs(x-fx)&lt;=1 &amp;&amp; Math.abs(y-fy)&lt;=1;
+    if(!near) pool.push([x,y]);
+  }
+  let placed=0;
+  while(placed&lt;cfg.mines &amp;&amp; pool.length){
+    const i=Math.floor(Math.random()*pool.length);
+    const [x,y]=pool.splice(i,1)[0];
+    mine[y][x]=true; placed++;
+  }
+}
+
+// 相邻雷数
+function adj(x,y){
+  let c=0;
+  for(let dy=-1;dy&lt;=1;dy++)for(let dx=-1;dx&lt;=1;dx++){
+    if(!dx&amp;&amp;!dy)continue;
+    const nx=x+dx,ny=y+dy;
+    if(nx&gt;=0&amp;&amp;nx&lt;sX&amp;&amp;ny&gt;=0&amp;&amp;ny&lt;sY&amp;&amp;mine[ny][nx])c++;
+  }
+  return c;
+}
+function cellEl(x,y){return boardEl.querySelector(`.cell[data-x=&quot;${x}&quot;][data-y=&quot;${y}&quot;]`);}
+
+// 开始计时
+function startTimer(){
+  if(started) return;
+  started=true;
+  timerId=setInterval(()=&gt;{
+    timeSec++;
+    const m=String(Math.floor(timeSec/60)).padStart(2,&#x27;0&#x27;);
+    const s=String(timeSec%60).padStart(2,&#x27;0&#x27;);
+    timerEl.textContent=`${m}:${s}`;
+  },1000);
+}
+
+// 翻开
+function reveal(x,y){
+  if(over||open[y][x]||flag[y][x])return;
+  if(!started){placeMines(x,y);startTimer();}
+  if(mine[y][x]){return lost(x,y);}
+  flood(x,y);
+  checkWin();
+}
+
+function flood(x,y){
+  if(x&lt;0||x&gt;=sX||y&lt;0||y&gt;=sY)return;
+  if(open[y][x]||flag[y][x])return;
+  open[y][x]=true;
+  const el=cellEl(x,y); el.classList.add(&#x27;open&#x27;);
+  const n=adj(x,y);
+  if(n&gt;0){el.textContent=n;el.classList.add(&#x27;c&#x27;+n);}
+  else{
+    for(let dy=-1;dy&lt;=1;dy++)for(let dx=-1;dx&lt;=1;dx++)flood(x+dx,y+dy);
+  }
+}
+
+// 插旗 / 取消
+function toggleFlag(x,y){
+  if(over||open[y][x])return;
+  const el=cellEl(x,y);
+  if(flag[y][x]){
+    flag[y][x]=false; mineLeft++; el.textContent=&#x27;&#x27;; el.innerHTML=&#x27;&#x27;;
+  }else{
+    if(mineLeft&lt;=0)return;
+    flag[y][x]=true; mineLeft--; el.innerHTML=ICON_FLAG;
+  }
+  minesEl.textContent=mineLeft;
+}
+
+// 踩雷失败
+function lost(stepX,stepY){
+  over=true; won=false; clearInterval(timerId); setFace(&#x27;lost&#x27;);
+  for(let y=0;y&lt;sY;y++)for(let x=0;x&lt;sX;x++){
+    const el=cellEl(x,y);
+    if(mine[y][x]){
+      el.innerHTML=ICON_MINE;
+      if(x===stepX&amp;&amp;y===stepY){el.classList.add(&#x27;boom&#x27;);el.classList.remove(&#x27;open&#x27;);}
+      else el.classList.add(&#x27;open&#x27;);
+    }else if(flag[y][x]&amp;&amp;!mine[y][x]){
+      el.classList.add(&#x27;wrong&#x27;); el.innerHTML=&#x27;✕&#x27;;
+    }
+  }
+  setTimeout(()=&gt;showModal(&#x27;💥&#x27;,&#x27;踩雷了！&#x27;,&#x27;本局 &lt;b&gt;&#x27;+lvNames[cfgKey()]+&#x27;&lt;/b&gt;，用时 &lt;b&gt;&#x27;+timerEl.textContent+&#x27;&lt;/b&gt;。差一点就成功啦。&#x27;),400);
+}
+
+// 胜利
+function checkWin(){
+  let opened=0;
+  for(let y=0;y&lt;sY;y++)for(let x=0;x&lt;sX;x++)if(open[y][x])opened++;
+  if(opened&gt;=sX*sY-cfg.mines&amp;&amp;!over){
+    over=true; won=true; clearInterval(timerId); setFace(&#x27;won&#x27;);
+    showModal(&#x27;🏆&#x27;,&#x27;排雷成功！&#x27;,&#x27;本局 &lt;b&gt;&#x27;+lvNames[cfgKey()]+&#x27;&lt;/b&gt;，用时 &lt;b&gt;&#x27;+timerEl.textContent+&#x27;&lt;/b&gt;。&#x27;);
+  }
+}
+
+function showModal(face,title,text){
+  document.getElementById(&#x27;oFace&#x27;).textContent=face;
+  document.getElementById(&#x27;oTitle&#x27;).textContent=title;
+  document.getElementById(&#x27;oText&#x27;).innerHTML=text;
+  document.getElementById(&#x27;overlay&#x27;).classList.add(&#x27;show&#x27;);
+}
+
+function cfgKey(){
+  return Object.keys(LEVELS).find(k=&gt;LEVELS[k]===cfg);
+}
+
+// ===== 事件 =====
+// 模式切换：翻开 / 标旗
+const modeSwitch=document.getElementById(&#x27;modeSwitch&#x27;);
+const modeTip=document.getElementById(&#x27;modeTip&#x27;);
+function setMode(m){
+  flagMode = (m===&#x27;flag&#x27;);
+  modeSwitch.querySelectorAll(&#x27;button&#x27;).forEach(x=&gt;x.classList.toggle(&#x27;on&#x27;,x.dataset.mode===m));
+  modeTip.textContent = flagMode ? &#x27;点格子插旗，再点取消&#x27; : &#x27;点格子翻开&#x27;;
+}
+modeSwitch.addEventListener(&#x27;click&#x27;,e=&gt;{
+  const b=e.target.closest(&#x27;button&#x27;); if(!b)return;
+  setMode(b.dataset.mode);
+});
+
+document.getElementById(&#x27;levels&#x27;).addEventListener(&#x27;click&#x27;,e=&gt;{
+  const b=e.target.closest(&#x27;button&#x27;); if(!b)return;
+  document.querySelectorAll(&#x27;#levels button&#x27;).forEach(x=&gt;x.classList.remove(&#x27;on&#x27;));
+  b.classList.add(&#x27;on&#x27;);
+  cfg=LEVELS[b.dataset.lv]; init();
+});
+document.getElementById(&#x27;resetBtn&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;init());
+document.getElementById(&#x27;oAgain&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;init());
+document.getElementById(&#x27;oClose&#x27;).addEventListener(&#x27;click&#x27;,()=&gt;document.getElementById(&#x27;overlay&#x27;).classList.remove(&#x27;show&#x27;));
+// 点击浮层空白处也可关闭，关闭后即可用笑脸/棋盘重开
+document.getElementById(&#x27;overlay&#x27;).addEventListener(&#x27;click&#x27;,e=&gt;{
+  if(e.target===document.getElementById(&#x27;overlay&#x27;)) document.getElementById(&#x27;overlay&#x27;).classList.remove(&#x27;show&#x27;);
+});
+
+init();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" title="扫雷"></iframe>
+  <button class="back-btn" onclick="safeWrap(showPage,'page-home')">返回首页</button>
+</div>
+
 <script>
 // ---------- 全局安全包装 ----------
 function safeWrap(fn, ...args){
@@ -668,15 +1525,15 @@ function calcDot(){
 
 function _getLastNumberInfo(){
   if(!expr) return null;
-  const m = expr.match(/(-?[\d.]+)$/);
+  const m = expr.match(/(?<![\d.)])(-?[\d.]+)$/);
   if(!m) return null;
   const num = parseFloat(m[1]);
   if(isNaN(num)) return null;
   return { before:expr.slice(0,expr.length-m[1].length), num:num };
 }
-function calcMinus(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+(-i.num); updateUI(); }
+function calcMinus(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+'('+(-i.num)+')'; updateUI(); }
 function calcPercent(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+(i.num/100); updateUI(); }
-function calcSquare(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+(i.num*i.num); updateUI(); }
+function calcSquare(){ const i=_getLastNumberInfo(); if(!i)return; expr=i.before+'('+(i.num*i.num)+')'; updateUI(); }
 function calcClear(){ expr=''; justCalculated=false; preEl.textContent=''; updateUI(); }
 function calcDel(){ if(expr==='错误')expr='';else expr=expr.slice(0,-1); preEl.textContent=''; updateUI(); }
 
@@ -698,13 +1555,18 @@ function clearHistory(){ history=[]; renderHistory(); }
 
 function calcEqual(){
   if(!expr) return;
-  const src=expr; const res=safeEval(expr);
+  const src=expr;
+  const clean = src.replace(/[+\-*/]+$/, '');   // 容忍末尾运算符：1+1+1+ 按 1+1+1 计算
+  const res=safeEval(clean);
   if(res===null){ expr='错误'; shakeScreen(); justCalculated=false; }
-  else{ const s=toPlainString(res); preEl.textContent=src+' ='; pushHistory(src,s); expr=s; justCalculated=true; }
+  else{ const s=toPlainString(res); preEl.textContent=clean+' ='; pushHistory(clean,s); expr=s; justCalculated=true; }
   updateUI();
 }
 
 document.addEventListener('keydown',e=>safeWrap(()=>{
+  const t=e.target;
+  if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable)) return;
+  if(!document.getElementById('page-calc').classList.contains('active')) return;
   const k=e.key;
   if(expr.length>=MAX_EXPR_LEN && /[\d\.\+\-\*\/\(\)]/.test(k)) return;
   if(/[\d\+\-\*\/\(\)\.]/.test(k)) calcInput(k);
@@ -827,7 +1689,7 @@ function createStamp(stampText) {
   let ringHtml = '';
   chars.forEach((ch, i) => {
     const angle = startAngle - i * angleStep;
-    ringHtml += `<span style="position:absolute;top:0;left:50%;width:14px;height:112px;transform-origin:center 56px;transform:translateX(-50%) rotate(${angle}deg);text-align:center;font-weight:900;font-size:14px;color:#b91c1c;">${ch}</span>`;
+    ringHtml += `<span style="position:absolute;top:0;left:50%;width:14px;height:112px;transform-origin:center 56px;transform:translateX(-50%) rotate(${angle}deg);text-align:center;font-weight:900;font-size:14px;color:#b91c1c;">${escapeHtml(ch)}</span>`;
   });
 
   return `
@@ -864,12 +1726,12 @@ function renderPreview() {
   paper.className = `template${currentTemplate} cert-paper`;
 
   let inner = `
-        <div class="title">${title}</div>
+        <div class="title">${escapeHtml(title)}</div>
         <div class="subtitle">${subTitleText}</div>
-        <div class="name">${name}</div>
-        <div class="content">${content}</div>
+        <div class="name">${escapeHtml(name)}</div>
+        <div class="content">${escapeHtml(content)}</div>
         <div class="footer">
-          <div>发奖人：${issuer}</div>
+          <div>发奖人：${escapeHtml(issuer)}</div>
           <div style="margin-top:8px;">日期：${showDate}</div>
         </div>
         ${createStamp(stampText)}
@@ -929,6 +1791,7 @@ function switchView(id){
 /* ---- 名单抽取 ---- */
 let drawItems = [];
 let drawWinners = [];
+let drawPool = [];   // 完整名单副本：供“重新抽奖”恢复
 
 function parseList(text){
   const arr = text.split(/[\s,，、;；\n\r]+/).map(s=>s.trim()).filter(s=>s.length>0);
@@ -967,11 +1830,13 @@ function resetDraw(){
   drawWinners = [];
   document.getElementById('winnersBox').innerHTML = '';
   document.getElementById('rollingBox').querySelector('span').textContent = '';
+  if(drawPool.length){ drawItems = [...drawPool]; renderList(); }
 }
 function clearDraw(){
   document.getElementById('drawInput').value = '';
   drawItems = [];
   drawWinners = [];
+  drawPool = [];
   renderList();
   resetDraw();
 }
@@ -1001,6 +1866,7 @@ function finalizeDraw(num){
   const pool = [...drawItems];
   for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
   drawWinners = pool.slice(0,num);
+  drawPool = [...drawItems];   // 保留完整名单副本，供重新抽奖恢复
   drawWinners.forEach(w=>{ drawItems = drawItems.filter(x=>x!==w); });
 
   document.getElementById('rollingBox').querySelector('span').textContent = '🎉 抽奖完成';
@@ -1110,7 +1976,8 @@ function backToList(){
   document.getElementById('wheelStage').classList.remove('show');
   document.getElementById('wheelListCard').style.display = '';
   currentWheel = null;
-  if(wheelAnim) cancelAnimationFrame(wheelAnim);
+  if(wheelAnim){ cancelAnimationFrame(wheelAnim); wheelAnim = null; }
+  document.getElementById('spinBtn').disabled = false;
 }
 
 function drawWheel(){
@@ -1143,7 +2010,7 @@ function drawWheel(){
     ctx.rotate(a0 + (a1-a0)/2);
     ctx.textAlign = 'right';
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold ' + (size*0.06) + 'px sans-serif';
+    ctx.font = 'bold ' + (size*0.09) + 'px sans-serif';
     ctx.fillText(currentWheel.options[i], r-14, 6);
     ctx.restore();
   }
@@ -1177,9 +2044,10 @@ function spinWheel(){
     else{
       wheelAnim = null;
       document.getElementById('spinBtn').disabled = false;
-      const finalA = ((-Math.PI/2 + wheelAngle) % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
-      const sector = Math.floor(finalA / (2*Math.PI/n));
-      const result = currentWheel.options[sector % n];
+      const twoPi=2*Math.PI, delta=twoPi/n;
+      const normalized=((-wheelAngle%twoPi)+twoPi)%twoPi;
+      const sector=Math.floor(normalized/delta)%n;
+      const result=currentWheel.options[sector];
       document.getElementById('spinResult').textContent = '🎉 ' + result;
     }
   }
